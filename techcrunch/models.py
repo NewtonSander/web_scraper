@@ -4,9 +4,7 @@ class Author(models.Model):
     name = models.CharField(max_length=300)
     tweeter_user = models.CharField(max_length=100)
     tweeter_url = models.CharField(max_length=200)
-    
-    def __str__(self):
-        return self.name
+
 
 
 
@@ -17,5 +15,4 @@ class Article(models.Model):
     content = models.TextField()
     pub_date = models.DateField()
     
-    def __str__(self):
-        return self.title
+    
