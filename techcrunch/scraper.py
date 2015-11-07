@@ -57,6 +57,10 @@ class TechcrunchScraper(object):
             try:
                 html_doc = html.content
                 soup = BeautifulSoup(html_doc, "html.parser")
+                
+                # kill all script and style elements
+                for script in soup(["script", "style"]):
+                    script.extract()    # rip it out
                 article_header = soup.find("header", {"class":"article-header"})
                 article_url = html.url
                 title = article_header.find("h1", {"class":"tweet-title"}).get_text()
