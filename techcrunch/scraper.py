@@ -29,20 +29,25 @@ class TechcrunchScraper(object):
         for page_counter in range(1, 100):
             # iterates through article pages on the given date
             page_url = "%s/page/%s/" %(base_url, page_counter)
-            html = requests.get(page_url)        
-            if html.status_code == 200:
-                try:
-                    html_doc = html.content
-                    soup = BeautifulSoup(html_doc, "html.parser")
-                    article_lists = soup.findAll("ul", {"class":"river"})
-                    for article_list in article_lists:
-                        for article in article_list.findAll("li", {"class":"river-block"}):
-                            articles_urls.append(article.get("data-permalink"))
-                except Exception, e:
-                    print "Couldn't get the list of article urls, error: %s" % e
+            try:
+                if page_counter == 1:
+                    page_url = "%s/" %(base_url)
+                html = requests.get(page_url)   
+                if html.status_code == 200:
+                    try:
+                        html_doc = html.content
+                        soup = BeautifulSoup(html_doc, "html.parser")
+                        article_lists = soup.findAll("ul", {"class":"river"})
+                        for article_list in article_lists:
+                            for article in article_list.findAll("li", {"class":"river-block"}):
+                                articles_urls.append(article.get("data-permalink"))
+                    except Exception, e:
+                        print "Couldn't get the list of article urls, error: %s" % e
+                        break
+                elif html.status_code == 404:
+                    # next page doesn't exist, this is not an unexpected error
                     break
-            elif html.status_code == 404:
-                # next page doesn't exist, this is not an unexpected error
+            except requests.exceptions.ConnectionError, e:
                 break
         return articles_urls
     
@@ -52,8 +57,11 @@ class TechcrunchScraper(object):
             Given an article url, extracts all info needed to create
             an Article object
         """
-        html = requests.get(article_url)
-        if html.status_code == 200:
+        try:
+            html = requests.get(article_url)
+        except requests.exceptions.ConnectionError, e:
+            html = None
+        if html and html.status_code == 200:
             try:
                 html_doc = html.content
                 soup = BeautifulSoup(html_doc, "html.parser")

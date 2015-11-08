@@ -23,10 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'o*gp65-9k2k+(smruc95qefo^0=2-iziq2_i)+6qckjz$j8+3c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+#DEBUG = False
+#ALLOWED_HOSTS = ["*"]
+
 DEBUG = True
-
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -75,17 +76,30 @@ WSGI_APPLICATION = 'web_scraper.wsgi.application'
 
 CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
 CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 BROKER_URL = 'django://'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -103,4 +117,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 STATIC_URL = '/static/'

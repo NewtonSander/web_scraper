@@ -1,9 +1,9 @@
 from django.db import models
 
 class Author(models.Model):
-    name = models.CharField(max_length=300)
-    tweeter_user = models.CharField(max_length=100)
-    tweeter_url = models.CharField(max_length=200)
+    name = models.CharField(max_length=300, db_tablespace="indexes")
+    tweeter_user = models.CharField(max_length=100, db_tablespace="indexes")
+    tweeter_url = models.CharField(max_length=200, db_tablespace="indexes")
 
     def author_dict(self):
         return {"name":self.name,
@@ -13,10 +13,10 @@ class Author(models.Model):
 
 class Article(models.Model):
     author = models.ForeignKey(Author)
-    url = models.CharField(max_length=2000)
-    title = models.CharField(max_length=2000)
-    content = models.TextField()
-    pub_date = models.DateField()
+    url = models.CharField(max_length=2000, db_tablespace="indexes")
+    title = models.CharField(max_length=2000, db_tablespace="indexes")
+    content = models.TextField(db_tablespace="indexes")
+    pub_date = models.DateField(db_tablespace="indexes")
     
     def article_dict(self):
         return {

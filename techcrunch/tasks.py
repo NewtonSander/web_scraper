@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import datetime
 
 from celery import shared_task
 
@@ -6,6 +7,7 @@ from .scraper import TechcrunchScraper
 from .models import Article, Author
 
 scraper = TechcrunchScraper()
+
 
 @shared_task
 def find_articles(year, month, day):
@@ -27,3 +29,10 @@ def find_articles(year, month, day):
                                  content=article.content,
                                  pub_date=article.datetime)                
             article_db.save()
+            
+@shared_task
+def find_today_articles():
+    now = datetime.datetime.now()
+    month = str(now.month).zfill(2)
+    day = str(now.day).zfill(2)
+    find_articles.delay(now.year, month, day)

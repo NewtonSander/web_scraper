@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^techcrunch/', include('techcrunch.urls')),
+    url(r'^$', include('techcrunch.urls')),
 ]
